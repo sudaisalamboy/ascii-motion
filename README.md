@@ -141,3 +141,16 @@ MIT — do whatever you want.
 
 Built by [sudaisalamboy](https://github.com/sudaisalamboy).
 Inspired by the classic "ASCII art generators" but with video support + real-time preview.
+
+---
+
+## 👨‍💻 About the Developer
+
+**Sudais Alam** — Full Stack Developer specializing in Next.js, React, and TypeScript. 5+ years building scalable web apps, custom eCommerce solutions, and security tools.
+
+- 🔗 **Portfolio**: [sudaisalamboy.github.io/portfolio](https://sudaisalamboy.github.io/portfolio/) — hire me for custom web development
+- 🐙 **GitHub**: [github.com/sudaisalamboy](https://github.com/sudaisalamboy)
+- 💼 **LinkedIn**: [linkedin.com/in/sudais-alam-65035138b](https://www.linkedin.com/in/sudais-alam-65035138b)
+- 💬 **WhatsApp**: [wa.me/919117509707](https://wa.me/919117509707)
+
+> 📍 Custom eCommerce website developer in Gaya, Bihar, India. Available for remote + on-site work.
