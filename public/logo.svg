@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+  <defs>
+    <style type="text/css">
+      .bg { fill: #0a0a0b; }
+      .ascii-char { fill: #98c379; font-family: 'Courier New', monospace; font-weight: bold; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="30" height="30" rx="4"/>
+  <text class="ascii-char" x="6" y="13" font-size="7">[</text>
+  <text class="ascii-char" x="15" y="13" font-size="7">#</text>
+  <text class="ascii-char" x="6" y="22" font-size="7">]</text>
+  <text class="ascii-char" x="15" y="22" font-size="7">@</text>
+</svg>

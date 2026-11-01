@@ -1,0 +1,13 @@
+// Prisma schema for ASCII Motion
+// The app uses an in-memory job queue (see src/lib/ascii-jobs.ts), so no
+// Prisma models are needed for the core conversion flow. The schema is kept
+// minimal so `prisma generate` works without errors.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
