@@ -37,6 +37,26 @@ export const CHAR_RAMPS: CharRamp[] = [
   { id: "binary", name: "Binary", chars: " 01" },
   { id: "hex", name: "Hex", chars: " 0123456789ABCDEF" },
   {
+    id: "matrix",
+    name: "Matrix",
+    chars: " \u30AB\u30AD\u30AF\u30B1\u30B3\u30B5\u30B7\u30B9\u30BB\u30BD",
+  },
+  {
+    id: "braille",
+    name: "Braille",
+    chars: " \u2800\u2801\u2803\u2809\u2819\u2839\u283B\u283F\u28FF",
+  },
+  {
+    id: "kaomoji",
+    name: "Kaomoji",
+    chars: " \u00B7\u2502\u2514\u251C\u2534\u2524\u253C\u2593\u2588",
+  },
+  {
+    id: "shades",
+    name: "Shades",
+    chars: " \u2591\u2592\u2593\u2588\u2588\u2588",
+  },
+  {
     id: "hearts",
     name: "Hearts",
     chars: "\uD83D\uDDA4\uD83E\uDD0E\u2764\uFE0F\uD83E\uDDE1\uD83D\uDC9B\uD83D\uDC9A\uD83D\uDC99\uD83D\uDC9C\uD83E\uDD0D",
