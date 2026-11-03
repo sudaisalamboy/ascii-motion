@@ -41,14 +41,17 @@ import { ServerOutput } from "@/components/ascii-server-output";
 
 type Mode = "client" | "server";
 
-const COL_OPTIONS = [80, 120, 160, 200, 240];
-const FPS_OPTIONS = [12, 15, 24, 30, 60];
+const COL_OPTIONS = [40, 60, 80, 100, 120, 160, 200, 240, 300];
+const FPS_OPTIONS = [8, 12, 15, 24, 30, 60];
 
 const BG_PRESETS = [
   { id: "black", name: "Black", value: "#000000" },
   { id: "ink", name: "Ink", value: "#0a0a0b" },
   { id: "slate", name: "Slate", value: "#0f172a" },
+  { id: "terminal", name: "Terminal", value: "#0c0c0c" },
+  { id: "deepblue", name: "Deep Blue", value: "#0a0e27" },
   { id: "white", name: "White", value: "#ffffff" },
+  { id: "cream", name: "Cream", value: "#fff8e7" },
 ];
 
 const MONO_PRESETS = [
@@ -57,6 +60,9 @@ const MONO_PRESETS = [
   { id: "cyan", name: "Cyan", value: "#22d3ee" },
   { id: "white", name: "White", value: "#e4e4e7" },
   { id: "pink", name: "Pink", value: "#f472b6" },
+  { id: "red", name: "Red", value: "#ef4444" },
+  { id: "purple", name: "Purple", value: "#a855f7" },
+  { id: "lime", name: "Lime", value: "#84cc16" },
 ];
 
 export function VideoConverter() {
@@ -73,6 +79,9 @@ export function VideoConverter() {
   const [bgColor, setBgColor] = useState("#000000");
   const [monoColor, setMonoColor] = useState("#22c55e");
   const [withSound, setWithSound] = useState(false);
+  const [customRamp, setCustomRamp] = useState("");
+  const [watermarkText, setWatermarkText] = useState("ASCII Motion");
+  const [watermarkOn, setWatermarkOn] = useState(true);
 
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -96,6 +105,7 @@ export function VideoConverter() {
     bgColor,
     fontSize,
     withSound,
+    watermark: watermarkOn && watermarkText.trim() ? watermarkText.trim() : undefined,
   };
 
   const handleFile = useCallback((f: File | null | undefined) => {
@@ -131,16 +141,18 @@ export function VideoConverter() {
     setFile(null);
   };
 
-  const ramp = CHAR_RAMPS.find((r) => r.id === rampId) ?? CHAR_RAMPS[0];
+  const ramp = customRamp.trim().length >= 2
+    ? { id: "custom", name: "Custom", chars: customRamp.trim() }
+    : CHAR_RAMPS.find((r) => r.id === rampId) ?? CHAR_RAMPS[0];
   const fileKey = file
     ? `${file.name}:${file.size}:${file.lastModified}`
     : "";
   // Client mode: remount when the file or STRUCTURAL settings change
   // (cols/fps/ramp/invert affect frame data). Render-time settings
   // (color/font/background) live-update without remounting.
-  const clientKey = `client:${fileKey}:${cols}:${fps}:${rampId}:${invert}`;
+  const clientKey = `client:${fileKey}:${cols}:${fps}:${rampId}:${customRamp}:${invert}`;
   // Server mode: remount on any settings change so a stale result clears.
-  const serverKey = `server:${fileKey}:${cols}:${fps}:${rampId}:${invert}:${colored}:${monoColor}:${bgColor}:${fontSize}:${withSound}`;
+  const serverKey = `server:${fileKey}:${cols}:${fps}:${rampId}:${customRamp}:${invert}:${colored}:${monoColor}:${bgColor}:${fontSize}:${withSound}`;
 
   return (
     <div className="space-y-6">
@@ -332,6 +344,25 @@ export function VideoConverter() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                    Custom characters (optional)
+                  </Label>
+                  <input
+                    type="text"
+                    value={customRamp}
+                    onChange={(e) => setCustomRamp(e.target.value)}
+                    disabled={busy}
+                    placeholder="Type your own characters (dark → light)"
+                    className="w-full border-2 border-[var(--brutal-border)] bg-card px-3 py-2 font-mono text-sm text-foreground outline-none focus:border-secondary"
+                  />
+                  {customRamp.trim().length >= 2 && (
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-secondary">
+                      ✓ Using custom ramp ({customRamp.trim().length} chars)
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                       Font size ·{" "}
@@ -424,6 +455,37 @@ export function VideoConverter() {
                     onCheckedChange={setWithSound}
                     disabled={busy}
                   />
+                </div>
+
+                <Separator />
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="watermark" className="text-sm font-bold uppercase tracking-wide">
+                      Watermark
+                    </Label>
+                    <Switch
+                      id="watermark"
+                      checked={watermarkOn}
+                      onCheckedChange={setWatermarkOn}
+                      disabled={busy}
+                    />
+                  </div>
+                  {watermarkOn && (
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        value={watermarkText}
+                        onChange={(e) => setWatermarkText(e.target.value)}
+                        disabled={busy}
+                        placeholder="Your watermark text"
+                        className="w-full border-2 border-[var(--brutal-border)] bg-card px-3 py-2 font-mono text-sm text-foreground outline-none focus:border-secondary"
+                      />
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Shown at bottom-right of every frame
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
