@@ -117,7 +117,7 @@ export function ClientOutput({ file, videoUrl, settings, onBusyChange }: Props) 
   }, [frames]);
 
   // Keep render style in sync; live-update the current frame for
-  // render-time settings (color / font / background).
+  // render-time settings (color / font / background / watermark).
   useEffect(() => {
     styleRef.current = {
       fontSize,
@@ -127,6 +127,7 @@ export function ClientOutput({ file, videoUrl, settings, onBusyChange }: Props) 
       monoColor,
       background: bgColor,
       font: glyph.font,
+      watermark: settings.watermark,
     };
     if (framesRef.current.length > 0 && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
