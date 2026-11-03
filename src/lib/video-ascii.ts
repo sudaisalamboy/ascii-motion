@@ -85,6 +85,7 @@ export type ConvertSettings = {
   bgColor: string;
   fontSize: number;
   withSound: boolean;
+  watermark?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -118,6 +119,7 @@ export type RenderStyle = {
   monoColor: string;
   background: string;
   font: string;
+  watermark?: string;
 };
 
 /** Seek a video element to a timestamp and resolve once the frame is ready. */
@@ -251,14 +253,15 @@ function imageDataToAscii(img: ImageData, ramp: string, lastIdx: number): AsciiF
   return { cols, rows, cells };
 }
 
-/** Render a single AsciiFrame onto a 2D context using the given style. */
+/** Render a single AsciiFrame onto a 2D context using the given style.
+ *  If style.watermark is set, draws it at the bottom-right corner. */
 export function renderAsciiFrame(
   ctx: CanvasRenderingContext2D,
   frame: AsciiFrame,
   style: RenderStyle,
 ): void {
   const { cols, rows, cells } = frame;
-  const { charW, charH, colored, monoColor, background, font } = style;
+  const { charW, charH, colored, monoColor, background, font, watermark } = style;
   const w = cols * charW;
   const h = rows * charH;
 
@@ -276,32 +279,46 @@ export function renderAsciiFrame(
       for (let col = 0; col < cols; col++) s += cells[base + col].char;
       ctx.fillText(s, 0, row * charH);
     }
-    return;
+  } else {
+    let prevColor = "";
+    let buf = "";
+    let bufStartCol = 0;
+    const flush = (row: number) => {
+      if (buf.length === 0) return;
+      ctx.fillText(buf, bufStartCol * charW, row * charH);
+      buf = "";
+    };
+    for (let row = 0; row < rows; row++) {
+      const base = row * cols;
+      for (let col = 0; col < cols; col++) {
+        const cell = cells[base + col];
+        const color = `rgb(${cell.r},${cell.g},${cell.b})`;
+        if (color !== prevColor) {
+          flush(row);
+          ctx.fillStyle = color;
+          prevColor = color;
+          bufStartCol = col;
+        }
+        buf += cell.char;
+      }
+      flush(row);
+      prevColor = "";
+    }
   }
 
-  let prevColor = "";
-  let buf = "";
-  let bufStartCol = 0;
-  const flush = (row: number) => {
-    if (buf.length === 0) return;
-    ctx.fillText(buf, bufStartCol * charW, row * charH);
-    buf = "";
-  };
-  for (let row = 0; row < rows; row++) {
-    const base = row * cols;
-    for (let col = 0; col < cols; col++) {
-      const cell = cells[base + col];
-      const color = `rgb(${cell.r},${cell.g},${cell.b})`;
-      if (color !== prevColor) {
-        flush(row);
-        ctx.fillStyle = color;
-        prevColor = color;
-        bufStartCol = col;
-      }
-      buf += cell.char;
-    }
-    flush(row);
-    prevColor = "";
+  // Watermark — semi-transparent text at bottom-right
+  if (watermark) {
+    const wmFontSize = Math.max(10, Math.round(charH * 0.8));
+    ctx.font = `${wmFontSize}px ${FONT_STACK}`;
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(watermark, w - 6, h - 4);
+    ctx.globalAlpha = 1.0;
+    // Reset for next frame
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
   }
 }
 
